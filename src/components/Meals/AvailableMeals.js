@@ -17,10 +17,9 @@ const AvailableMeals = () => {
         const response = await fetch(url);
         const data = await response.json();
 
-        const dataKeys = Object.keys(data);
         const fetchedMeals = [];
 
-        for (const key of dataKeys) {
+        for (const key in data) {
           const meal = {
             id: key,
             name: data[key].name,
