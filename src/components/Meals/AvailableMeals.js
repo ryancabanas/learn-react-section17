@@ -10,33 +10,34 @@ const AvailableMeals = () => {
 
   useEffect(() => {
     const fetchMeals = async () => {
-      try {
-        const response = await fetch(
-          'https://react-http-4bc80-default-rtdb.firebaseio.com/availableMeals.json'
-        );
-        const data = await response.json();
+      const response = await fetch(
+        'https://react-http-4bc80-default-rtdb.firebaseio.com/availableMeals.json'
+      );
 
-        const fetchedMeals = [];
+      if (!response.ok) throw new Error('Something went wrong.');
 
-        for (const key in data) {
-          const meal = {
-            id: key,
-            name: data[key].name,
-            description: data[key].description,
-            price: data[key].price,
-          };
-          fetchedMeals.push(meal);
-        }
+      const data = await response.json();
 
-        setAvailableMeals(fetchedMeals);
-      } catch (error) {
-        setHttpError(error.message);
+      const fetchedMeals = [];
+
+      for (const key in data) {
+        const meal = {
+          id: key,
+          name: data[key].name,
+          description: data[key].description,
+          price: data[key].price,
+        };
+        fetchedMeals.push(meal);
       }
 
+      setAvailableMeals(fetchedMeals);
       setIsLoading(false);
     };
 
-    fetchMeals();
+    fetchMeals().catch((error) => {
+      setIsLoading(false);
+      setHttpError(error.message);
+    });
   }, []);
 
   const mealsList = availableMeals.map((meal) => (
@@ -52,8 +53,8 @@ const AvailableMeals = () => {
   let content;
   if (mealsList.length === 0) content = <p>No meals found.</p>;
   if (mealsList.length > 0) content = <ul>{mealsList}</ul>;
-  if (httpError) content = <p>Error loading meals.</p>;
   if (isLoading) content = <p>Loading...</p>;
+  if (httpError) content = <p>{httpError}</p>;
 
   return (
     <section className={classes.meals}>
