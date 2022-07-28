@@ -40,6 +40,22 @@ const AvailableMeals = () => {
     });
   }, []);
 
+  if (isLoading) {
+    return (
+      <section className={classes['meals-loading']}>
+        <p>Loading...</p>
+      </section>
+    );
+  }
+
+  if (httpError) {
+    return (
+      <section className={classes['error-loading']}>
+        <p>{httpError}</p>
+      </section>
+    );
+  }
+
   const mealsList = availableMeals.map((meal) => (
     <MealItem
       key={meal.id}
@@ -50,15 +66,11 @@ const AvailableMeals = () => {
     />
   ));
 
-  let content;
-  if (mealsList.length === 0) content = <p>No meals found.</p>;
-  if (mealsList.length > 0) content = <ul>{mealsList}</ul>;
-  if (isLoading) content = <p>Loading...</p>;
-  if (httpError) content = <p>{httpError}</p>;
-
   return (
     <section className={classes.meals}>
-      <Card>{content}</Card>
+      <Card>
+        <ul>{mealsList}</ul>
+      </Card>
     </section>
   );
 };
