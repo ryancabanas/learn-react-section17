@@ -5,28 +5,39 @@ import classes from './AvailableMeals.module.css';
 
 const AvailableMeals = () => {
   const [availableMeals, setAvailableMeals] = useState([]);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const url =
     'https://react-http-4bc80-default-rtdb.firebaseio.com/availableMeals.json';
 
   const fetchMeals = useCallback(async () => {
-    const response = await fetch(url);
-    const data = await response.json();
+    setIsLoading(true);
+    setError(null);
 
-    const dataKeys = Object.keys(data);
-    const fetchedMeals = [];
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
 
-    for (const key of dataKeys) {
-      const meal = {
-        id: key,
-        name: data[key].name,
-        description: data[key].description,
-        price: data[key].price,
-      };
-      fetchedMeals.push(meal);
+      const dataKeys = Object.keys(data);
+      const fetchedMeals = [];
+
+      for (const key of dataKeys) {
+        const meal = {
+          id: key,
+          name: data[key].name,
+          description: data[key].description,
+          price: data[key].price,
+        };
+        fetchedMeals.push(meal);
+      }
+
+      setAvailableMeals(fetchedMeals);
+    } catch (error) {
+      setError(error.message);
     }
 
-    setAvailableMeals(fetchedMeals);
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -43,11 +54,15 @@ const AvailableMeals = () => {
     />
   ));
 
+  let content;
+  if (mealsList.length === 0) content = <p>No meals found.</p>;
+  if (mealsList.length > 0) content = <ul>{mealsList}</ul>;
+  if (error) content = <p>Error loading meals.</p>;
+  if (isLoading) content = <p>Loading...</p>;
+
   return (
     <section className={classes.meals}>
-      <Card>
-        <ul>{mealsList}</ul>
-      </Card>
+      <Card>{content}</Card>
     </section>
   );
 };
