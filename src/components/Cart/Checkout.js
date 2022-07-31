@@ -56,8 +56,6 @@ const Checkout = (props) => {
       city: enteredCity,
       postalCode: enteredPostalCode,
     });
-
-    props.onCancel();
   };
 
   const nameControlClasses = `${classes.control} ${
